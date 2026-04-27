@@ -1,0 +1,114 @@
+<div class="reports-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>📊 Reports & Statistics</h1>
+    <p>Track your cycle patterns and health insights</p>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-content">
+        <p class="stat-label">Average Cycle Length</p>
+        <p class="stat-value">{{ averagePeriodDuration() }} days</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div class="stat-content">
+        <p class="stat-label">Total Tracked</p>
+        <p class="stat-value">{{ totalTrackedPeriods() }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📍</div>
+      <div class="stat-content">
+        <p class="stat-label">Earliest Record</p>
+        <p class="stat-value">{{ earliestPeriod() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  @if (periods().length > 1) {
+    <div class="chart-card">
+      <h2>Cycle Length History</h2>
+      <p class="chart-subtitle">Track your period cycle length over time</p>
+      <svg class="bar-chart" [attr.viewBox]="chartViewBox()">
+        @for (bar of bars(); track $index) {
+          <g>
+            <!-- Bar -->
+            <rect
+              [attr.x]="bar.x"
+              [attr.y]="bar.y"
+              [attr.width]="bar.width"
+              [attr.height]="bar.height"
+              [attr.fill]="bar.color"
+              class="bar"
+              rx="4"
+            />
+            <!-- Value Label (top of bar) -->
+            <text
+              class="bar-label"
+              [attr.x]="bar.x + bar.width / 2"
+              [attr.y]="bar.y - 6"
+            >
+              {{ bar.value }}d
+            </text>
+            <!-- Month Label (bottom of bar) -->
+            <text
+              class="month-label"
+              [attr.x]="bar.labelX"
+              [attr.y]="bar.labelY"
+            >
+              {{ bar.label }}
+            </text>
+          </g>
+        }
+      </svg>
+      <div class="chart-legend">Cycle length by month - Each bar shows the number of days between period starts</div>
+    </div>
+  }
+
+  <!-- Period Details Section -->
+  @if (periods().length > 0) {
+    <div class="history-card">
+      <h2>Period History</h2>
+      <div class="period-table">
+        <div class="table-header">
+          <div class="col col-date">Start Date</div>
+          <div class="col col-date">End Date</div>
+          <div class="col col-next">Next Period</div>
+          <div class="col col-status">Status</div>
+        </div>
+        @for (period of periods(); track period.id) {
+          <div class="table-row">
+            <div class="col col-date">
+              {{ formatDate(period.startDate) }}
+            </div>
+            <div class="col col-date">
+              {{ period.endDate ? formatDate(period.endDate) : '-' }}
+            </div>
+            <div class="col col-next">
+              {{ formatDate(period.nextPeriodDate) }}
+            </div>
+            <div class="col col-status">
+              <span class="status-badge" [class.notified]="period.isNotified">
+                {{ period.isNotified ? 'Notified ✓' : 'Pending' }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <p>No periods tracked yet</p>
+      <p class="empty-subtitle">Add periods in the Periods section to see statistics</p>
+    </div>
+  }
+</div>

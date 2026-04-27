@@ -1,0 +1,172 @@
+<div class="signup-container">
+  <div class="signup-wrapper">
+    <!-- Logo/Header -->
+    <div class="signup-header">
+      <div class="logo">
+        <div class="logo-icon">🩸</div>
+        <h1>Period Monitor</h1>
+      </div>
+      <p class="tagline">Create your account to get started</p>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-danger">
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          [class.is-invalid]="submitted() && f['email'].invalid"
+          formControlName="email"
+          placeholder="your@email.com"
+        />
+        @if (submitted() && f['email'].invalid) {
+          <small class="error-text">
+            @if (f['email'].errors?.['required']) {
+              Email is required
+            } @else if (f['email'].errors?.['email']) {
+              Email is invalid
+            }
+          </small>
+        }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="password-wrapper">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            id="password"
+            class="form-control"
+            [class.is-invalid]="submitted() && f['password'].invalid"
+            formControlName="password"
+            placeholder="At least 6 characters"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePasswordVisibility()"
+            tabindex="-1"
+          >
+            @if (showPassword()) {
+              👁️
+            } @else {
+              🙈
+            }
+          </button>
+        </div>
+        @if (submitted() && f['password'].invalid) {
+          <small class="error-text">
+            @if (f['password'].errors?.['required']) {
+              Password is required
+            } @else if (f['password'].errors?.['minlength']) {
+              Password must be at least 6 characters
+            }
+          </small>
+        }
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="password-wrapper">
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            id="confirmPassword"
+            class="form-control"
+            [class.is-invalid]="submitted() && (f['confirmPassword'].invalid || signupForm.errors?.['passwordMismatch'])"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="toggleConfirmPasswordVisibility()"
+            tabindex="-1"
+          >
+            @if (showConfirmPassword()) {
+              👁️
+            } @else {
+              🙈
+            }
+          </button>
+        </div>
+        @if (submitted() && (f['confirmPassword'].invalid || signupForm.errors?.['passwordMismatch'])) {
+          <small class="error-text">
+            @if (f['confirmPassword'].errors?.['required']) {
+              Please confirm your password
+            } @else if (signupForm.errors?.['passwordMismatch']) {
+              Passwords do not match
+            }
+          </small>
+        }
+      </div>
+
+      <!-- Husband Email Field -->
+      <div class="form-group">
+        <label for="husbandEmail" class="form-label">Husband's Email (for notifications)</label>
+        <input
+          type="email"
+          id="husbandEmail"
+          class="form-control"
+          [class.is-invalid]="submitted() && f['husbandEmail'].invalid"
+          formControlName="husbandEmail"
+          placeholder="husband@email.com"
+        />
+        @if (submitted() && f['husbandEmail'].invalid) {
+          <small class="error-text">
+            @if (f['husbandEmail'].errors?.['required']) {
+              Husband's email is required
+            } @else if (f['husbandEmail'].errors?.['email']) {
+              Email is invalid
+            }
+          </small>
+        }
+      </div>
+
+      <!-- Start Date Field -->
+      <div class="form-group">
+        <label for="startDate" class="form-label">Most Recent Period Start Date</label>
+        <input
+          type="date"
+          id="startDate"
+          class="form-control"
+          [class.is-invalid]="submitted() && f['startDate'].invalid"
+          formControlName="startDate"
+        />
+        @if (submitted() && f['startDate'].invalid) {
+          <small class="error-text">Please provide your most recent period start date</small>
+        }
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="loading()"
+      >
+        @if (loading()) {
+          <span class="spinner"></span>
+          Creating Account...
+        } @else {
+          Create Account
+        }
+      </button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="auth-footer">
+      <p>Already have an account? <a routerLink="/login">Login here</a></p>
+    </div>
+  </div>
+</div>

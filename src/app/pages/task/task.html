@@ -1,0 +1,105 @@
+<div class="periods-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>📅 Period Tracker</h1>
+    <p>Track and manage your menstrual cycle</p>
+  </div>
+
+  <!-- Add Period Form -->
+  <div class="add-period-card">
+    <h2>Add New Period</h2>
+    <form [formGroup]="periodForm" (ngSubmit)="onSubmit()">
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success">
+          {{ successMessage() }}
+        </div>
+      }
+
+      <!-- Error Message -->
+      @if (errorMessage()) {
+        <div class="alert alert-danger">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">Start Date *</label>
+          <input
+            type="date"
+            id="startDate"
+            class="form-control"
+            [class.is-invalid]="submitted() && f['startDate'].invalid"
+            formControlName="startDate"
+          />
+          @if (submitted() && f['startDate'].invalid) {
+            <small class="error-text">Start date is required</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">End Date</label>
+          <input
+            type="date"
+            id="endDate"
+            class="form-control"
+            formControlName="endDate"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" [disabled]="loading()">
+        @if (loading()) {
+          Adding...
+        } @else {
+          Add Period
+        }
+      </button>
+    </form>
+  </div>
+  <!-- Periods List -->
+  @if (sortedPeriods().length > 0) {
+    <div class="periods-list-card">
+      <h2>Your Periods</h2>
+      <div class="periods-grid">
+        @for (period of sortedPeriods(); track period.id) {
+          <div class="period-card">
+            <div class="period-header">
+              <span class="period-date">
+                {{ formatDate(period.startDate) }}
+              </span>
+              @if (period.endDate) {
+                <span class="period-end">→ {{ formatDate(period.endDate) }}</span>
+              }
+            </div>
+            <div class="period-details">
+              <div class="detail-item">
+                <span class="label">Next Period:</span>
+                <span class="value">{{ formatDate(period.nextPeriodDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Days Until:</span>
+                <span class="value">{{ daysUntil(period.nextPeriodDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Duration:</span>
+                <span class="value">{{ calculateDuration(period.startDate, period.endDate) }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Reminder Date:</span>
+                <span class="value">{{ formatDate(period.reminderDate) }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-icon">📆</span>
+      <p>No periods tracked yet</p>
+      <p class="empty-subtitle">Start tracking by adding your first period above</p>
+    </div>
+  }
+</div>

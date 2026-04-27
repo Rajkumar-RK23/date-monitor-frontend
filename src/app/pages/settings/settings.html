@@ -1,0 +1,179 @@
+<div class="settings-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>⚙️ Account Settings</h1>
+    <p>Manage your account and security</p>
+  </div>
+
+  <!-- Change Password Card -->
+  <div class="settings-card">
+    <h2>Change Password</h2>
+    <p class="card-subtitle">Update your password to keep your account secure</p>
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+      <div class="alert alert-danger">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <!-- Success Message -->
+    @if (successMessage()) {
+      <div class="alert alert-success">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="changeForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <!-- Current Password -->
+        <div class="form-group">
+          <label for="currentPassword">Current Password *</label>
+          <div class="input-with-toggle">
+            <input
+              [type]="showCurrent() ? 'text' : 'password'"
+              id="currentPassword"
+              class="form-control"
+              [class.is-invalid]="submitted() && f['currentPassword'].invalid"
+              formControlName="currentPassword"
+              placeholder="Enter your current password"
+            />
+            <button
+              type="button"
+              class="toggle-btn"
+              (click)="toggleShowCurrent()"
+              [title]="showCurrent() ? 'Hide' : 'Show'"
+            >
+              {{ showCurrent() ? '👁️‍🗨️' : '👁️' }}
+            </button>
+          </div>
+          @if (submitted() && f['currentPassword'].invalid) {
+            <small class="error-text">Current password is required</small>
+          }
+        </div>
+
+        <!-- New Password -->
+        <div class="form-group">
+          <label for="newPassword">New Password *</label>
+          <div class="input-with-toggle">
+            <input
+              [type]="showNew() ? 'text' : 'password'"
+              id="newPassword"
+              class="form-control"
+              [class.is-invalid]="submitted() && f['newPassword'].invalid"
+              formControlName="newPassword"
+              (input)="updateStrength()"
+              placeholder="Enter a new password (min 6 characters)"
+            />
+            <button
+              type="button"
+              class="toggle-btn"
+              (click)="toggleShowNew()"
+              [title]="showNew() ? 'Hide' : 'Show'"
+            >
+              {{ showNew() ? '👁️‍🗨️' : '👁️' }}
+            </button>
+          </div>
+          @if (submitted() && f['newPassword'].invalid) {
+            <small class="error-text">
+              @if (f['newPassword'].hasError('required')) {
+                New password is required
+              }
+              @if (f['newPassword'].hasError('minlength')) {
+                Password must be at least 6 characters
+              }
+            </small>
+          }
+          <!-- Password Strength Indicator -->
+          <div class="password-strength">
+            <div class="strength-bar">
+              <div
+                class="strength-fill"
+                [style.width.%]="passwordStrength()"
+                [class.weak]="passwordStrength() <= 33"
+                [class.medium]="passwordStrength() > 33 && passwordStrength() <= 66"
+                [class.strong]="passwordStrength() > 66"
+              ></div>
+            </div>
+            @if (passwordStrength() > 0) {
+              <small class="strength-label">
+                @if (passwordStrength() <= 33) {
+                  Weak
+                } @else if (passwordStrength() <= 66) {
+                  Medium
+                } @else {
+                  Strong
+                }
+              </small>
+            }
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password *</label>
+          <div class="input-with-toggle">
+            <input
+              [type]="showConfirm() ? 'text' : 'password'"
+              id="confirmNewPassword"
+              class="form-control"
+              [class.is-invalid]="
+                submitted() &&
+                (f['confirmNewPassword'].invalid || changeForm.hasError('mismatch'))
+              "
+              formControlName="confirmNewPassword"
+              placeholder="Confirm your new password"
+            />
+            <button
+              type="button"
+              class="toggle-btn"
+              (click)="toggleShowConfirm()"
+              [title]="showConfirm() ? 'Hide' : 'Show'"
+            >
+              {{ showConfirm() ? '👁️‍🗨️' : '👁️' }}
+            </button>
+          </div>
+          @if (submitted()) {
+            @if (f['confirmNewPassword'].hasError('required')) {
+              <small class="error-text">Confirmation password is required</small>
+            }
+            @if (changeForm.hasError('mismatch')) {
+              <small class="error-text">Passwords do not match</small>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="loading() || changeForm.invalid"
+        >
+          @if (loading()) {
+            Updating...
+          } @else {
+            Update Password
+          }
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="resetForm()">
+          Clear Form
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Account Info Card -->
+  <div class="settings-card">
+    <h2>Account Information</h2>
+    <div class="info-item">
+      <span class="label">Email:</span>
+      <span class="value">{{ pf['email'].value || 'Not available' }}</span>
+    </div>
+    <div class="info-item">
+      <span class="label">Husband's Email:</span>
+      <span class="value">{{ pf['husbandEmail'].value || 'Not set' }}</span>
+    </div>
+  </div>
+</div>
