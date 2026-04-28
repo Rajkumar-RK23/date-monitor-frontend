@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import {
   HttpInterceptor,
   HttpRequest,
@@ -13,7 +14,11 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {}
 
   intercept(
     req: HttpRequest<any>,
@@ -23,8 +28,8 @@ export class JwtInterceptor implements HttpInterceptor {
     let token = this.authService.getToken();
     console.log('[JWT Interceptor] Token from AuthService:', token ? `${token.substring(0, 20)}...` : 'null');
 
-    // Fallback: try direct localStorage read
-    if (!token) {
+    // Fallback: try direct localStorage read only in browser
+    if (!token && isPlatformBrowser(this.platformId)) {
       try {
         token = localStorage.getItem('auth_token');
         console.log('[JWT Interceptor] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'null');
