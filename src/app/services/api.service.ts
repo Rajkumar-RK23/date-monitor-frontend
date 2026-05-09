@@ -11,12 +11,13 @@ import {
   CreatePeriodRequest,
   ApiResponse,
 } from '../models';
+import { environment } from '../../environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:3001/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
